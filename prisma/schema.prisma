@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Participantes {
+    id        Int      @id @default(autoincrement())
+    nome      String
+    curso     String
+    curse     String
+    foto      String
+    idade     String
+    age       String
+    email     String   @unique
+    createdAt DateTime @default(now())
+}
+
+// 3. Tabela de Vídeo Aula
+model VideoAula {
+    id          Int    @id @default(autoincrement())
+    conteudo    String
+    content     String
+    urlMidia    String
+    descricao   String
+    description String
+}
+
+model Dicas {
+    id       Int    @id @default(autoincrement())
+    conteudo String
+    content  String
+    dicas    String
+    tips     String
+}
+
+model Simulado {
+    id              Int    @id @default(autoincrement())
+    pergunta        String
+    question        String
+    opcaoA          String
+    optionA         String
+    opcaoB          String
+    optionB         String
+    opcaoC          String
+    optionC         String
+    opcaoD          String
+    optionD         String
+    opcaoE          String
+    optionE         String
+    respostaCorreta String
+    correctAnswer   String
+    explicacao      String
+    explanation     String
+    materia         String
+}
