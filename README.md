@@ -28,6 +28,7 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 ## Tecnologias Utilizadas
 
 ### Backend
+
 - **Runtime:** Node.js
 - **Arquitetura:** API REST / Route Handlers (Next.js)
 - **ORM:** Prisma
@@ -35,6 +36,7 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 - **Autenticação:** Clerk
 
 ### Frontend
+
 - **Framework:** Next.js 16 (App Router, estrutura `src/`)
 - **Biblioteca de UI:** React (JavaScript — sem TypeScript)
 - **Estilização:** Tailwind CSS / CSS Modules
@@ -43,9 +45,10 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 - **Testes E2E:** Cypress
 
 ### Deploy
-- **Front-end:** Vercel *(pendente)*
-- **Back-end:** Render *(pendente)*
-- **Banco de Dados:** Neon / Supabase *(pendente)*
+
+- **Front-end:** Vercel _(pendente)_
+- **Back-end:** Render _(pendente)_
+- **Banco de Dados:** Neon / Supabase _(pendente)_
 
 ---
 
@@ -92,11 +95,20 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
       </a>
     </td>
     <td align="center">
-      <a href="#" title="Fabio Henrique">
+      <a href="https://github.com/Fabiox7778" title="Fabio Henrique">
         <img src="https://github.com/Fabiox7778.png" width="100px;" alt="Foto de Fabio Henrique"/><br>
         <sub>
           <b>Fabio Henrique</b><br>
           <i>Scrum Master · Dev Front-End</i>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/CiaociaoStopiglia" title="João Stopiglia">
+        <img src="https://github.com/CiaociaoStopiglia.png" width="100px;" alt="Foto de João Stopiglia"/><br>
+        <sub>
+          <b>João Stopiglia</b><br>
+          <i>Designer</i>
         </sub>
       </a>
     </td>
@@ -107,9 +119,9 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 
 ## Repositórios
 
-| Camada | Repositório |
-| --- | --- |
-| **Back-end** | [github.com/arthurmorais0227/geogoats-backend](https://github.com/arthurmorais0227/geogoats-backend) |
+| Camada        | Repositório                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| **Back-end**  | [github.com/arthurmorais0227/geogoats-backend](https://github.com/arthurmorais0227/geogoats-backend)   |
 | **Front-end** | [github.com/arthurmorais0227/geogoats-frontend](https://github.com/arthurmorais0227/geogoats-frontend) |
 
 ---
@@ -127,38 +139,38 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 
 1. **Clonar os repositórios**
 
-   ```bash
-   # Back-end
-   git clone https://github.com/arthurmorais0227/geogoats-backend
+    ```bash
+    # Back-end
+    git clone https://github.com/arthurmorais0227/geogoats-backend
 
-   # Front-end
-   git clone https://github.com/arthurmorais0227/geogoats-frontend
-   ```
+    # Front-end
+    git clone https://github.com/arthurmorais0227/geogoats-frontend
+    ```
 
 2. **Configurar o Back-end**
 
-   ```bash
-   cd geogoats-backend
-   npm install
-   # Configure suas variáveis de ambiente no arquivo .env
-   # Ex.: DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY
-   npx prisma migrate dev
-   npm run dev
-   ```
+    ```bash
+    cd geogoats-backend
+    npm install
+    # Configure suas variáveis de ambiente no arquivo .env
+    # Ex.: DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY
+    npx prisma migrate dev
+    npm run dev
+    ```
 
 3. **Configurar o Front-end**
 
-   ```bash
-   cd ../geogoats-frontend
-   npm install
-   # Configure suas variáveis de ambiente no arquivo .env.local
-   # Ex.: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY
-   npm run dev
-   ```
+    ```bash
+    cd ../geogoats-frontend
+    npm install
+    # Configure suas variáveis de ambiente no arquivo .env.local
+    # Ex.: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY
+    npm run dev
+    ```
 
 4. **Acessar a aplicação**
 
-   Abra o navegador em [http://localhost:3000](http://localhost:3000) (ou a porta indicada pelo Next.js).
+    Abra o navegador em [http://localhost:3000](http://localhost:3000) (ou a porta indicada pelo Next.js).
 
 ### Variáveis de Ambiente (exemplo)
 
