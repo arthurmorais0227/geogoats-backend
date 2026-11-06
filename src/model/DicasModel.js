@@ -1,21 +1,17 @@
 import prisma from '../lib/services/prismaClient.js';
 
 export default class DicasModel {
-    constructor({ id = null, conteudo, content, dicas, tips } = {}) {
+    constructor({ id = null, conteudo, dicas } = {}) {
         this.id = id;
         this.conteudo = conteudo;
-        this.content = content;
         this.dicas = dicas;
-        this.tips = tips;
     }
 
     async criar() {
         return prisma.dicas.create({
             data: {
                 conteudo: this.conteudo,
-                content: this.content,
                 dicas: this.dicas,
-                tips: this.tips,
             },
         });
     }
@@ -25,9 +21,7 @@ export default class DicasModel {
             where: { id: this.id },
             data: {
                 conteudo: this.conteudo,
-                content: this.content,
                 dicas: this.dicas,
-                tips: this.tips,
             },
         });
     }

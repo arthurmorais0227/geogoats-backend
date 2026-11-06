@@ -6,29 +6,19 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const { conteudo, content, dicas, tips } = req.body;
+        const { conteudo, dicas } = req.body;
 
         if (!conteudo) {
             return res.status(400).json({ error: 'O campo "conteudo" é obrigatório!' });
-        }
-
-        if (!content) {
-            return res.status(400).json({ error: 'O campo "content" é obrigatório!' });
         }
 
         if (!dicas) {
             return res.status(400).json({ error: 'O campo "dicas" é obrigatório!' });
         }
 
-        if (!tips) {
-            return res.status(400).json({ error: 'O campo "tips" é obrigatório!' });
-        }
-
         const dica1 = new DicasModel({
             conteudo,
-            content,
-            dicas: dicas,
-            tips,
+            dicas,
         });
         const data = await dica1.criar();
         return res.status(201).json({ message: 'Registro de dica criado com sucesso!', data });
