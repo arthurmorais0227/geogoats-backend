@@ -1,4 +1,4 @@
-import SimuladoModel from '../models/SimuladoModel.js';
+import SimuladoModel from '../model/SimuladoModel.js';
 
 export const criar = async (req, res) => {
     try {
@@ -8,6 +8,7 @@ export const criar = async (req, res) => {
 
         const {
             pergunta,
+            conteudo,
             opcaoA,
             opcaoB,
             opcaoC,
@@ -15,7 +16,12 @@ export const criar = async (req, res) => {
             opcaoE,
             respostaCorreta,
             explicacao,
+            materia,
         } = req.body;
+
+        if (!conteudo) {
+            return res.status(400).json({ error: 'O campo "conteudo" é obrigatório!' });
+        }
 
         if (!pergunta) {
             return res.status(400).json({ error: 'O campo "pergunta" é obrigatório!' });
@@ -49,15 +55,21 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'O campo "explicacao" é obrigatório!' });
         }
 
+        if (!materia) {
+            return res.status(400).json({ error: 'O campo "materia" é obrigatório!' });
+        }
+
         const simulado = new SimuladoModel({
-            pergunta: req.body.pergunta,
-            opcaoA: req.body.opcaoA,
-            opcaoB: req.body.opcaoB,
-            opcaoC: req.body.opcaoC,
-            opcaoD: req.body.opcaoD,
-            opcaoE: req.body.opcaoE,
-            respostaCorreta: req.body.respostaCorreta,
-            explicacao: req.body.explicacao,
+            pergunta,
+            conteudo,
+            opcaoA,
+            opcaoB,
+            opcaoC,
+            opcaoD,
+            opcaoE,
+            respostaCorreta,
+            explicacao,
+            materia,
         });
         
         const data = await simulado.criar();
@@ -110,16 +122,6 @@ export const buscarPorId = async (req, res) => {
 export const atualizar = async (req, res) => {
     try {
         const { id } = req.params;
-        const {
-            pergunta,
-            opcaoA,
-            opcaoB,
-            opcaoC,
-            opcaoD,
-            opcaoE,
-            respostaCorreta,
-            explicacao,
-        } = req.body;
 
         if (isNaN(id)) {
             return res.status(400).json({ error: 'ID inválido.' });
@@ -137,6 +139,9 @@ export const atualizar = async (req, res) => {
 
         if (req.body.pergunta !== undefined) {
             simulado.pergunta = req.body.pergunta;
+        }
+        if (req.body.conteudo !== undefined) {
+            simulado.conteudo = req.body.conteudo;
         }
         if (req.body.opcaoA !== undefined) {
             simulado.opcaoA = req.body.opcaoA;
@@ -158,6 +163,9 @@ export const atualizar = async (req, res) => {
         }
         if (req.body.explicacao !== undefined) {
             simulado.explicacao = req.body.explicacao;
+        }
+        if (req.body.materia !== undefined) {
+            simulado.materia = req.body.materia;
         }
 
         const data = await simulado.atualizar();

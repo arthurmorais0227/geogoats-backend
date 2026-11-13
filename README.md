@@ -188,6 +188,21 @@ CLERK_SECRET_KEY="sk_test_..."
 
 > ⚠️ **Atenção:** nunca commite o arquivo `.env` no repositório. Utilize `.gitignore` e mantenha as credenciais seguras (RNF03 / RN01.1).
 
+### Rotas da API
+
+As rotas de leitura de dicas, participantes, simulados, videoaulas e notícias exigem `PUBLIC_API_KEY` no cabeçalho `x-api-key`. Operações de escrita exigem `ADMIN_API_KEY`. As rotas de usuários exigem `ADMIN_API_KEY` para todas as operações.
+
+| Recurso | Caminho |
+| --- | --- |
+| Dicas | `/dicas` |
+| Participantes | `/participantes` |
+| Simulados | `/simulado` |
+| Videoaulas | `/videoaulas` |
+| Notícias | `/noticias` |
+| Usuários | `/usuarios` |
+
+Cada recurso oferece `GET /`, `GET /:id`, `POST /`, `PUT /:id` e `DELETE /:id`.
+
 ---
 
 ## Como Testar Online

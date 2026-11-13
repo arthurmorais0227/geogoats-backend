@@ -3,6 +3,7 @@ import prisma from '../lib/services/prismaClient.js';
 export default class SimuladoModel {
     constructor({
         id = null,
+        conteudo,
         pergunta,
         opcaoA,
         opcaoB,
@@ -14,6 +15,7 @@ export default class SimuladoModel {
         materia
     } = {}) {
         this.id = id;
+        this.conteudo = conteudo;
         this.pergunta = pergunta;
         this.opcaoA = opcaoA;
         this.opcaoB = opcaoB;
@@ -28,6 +30,7 @@ export default class SimuladoModel {
     async criar() {
         return prisma.simulado.create({
             data: {
+                conteudo: this.conteudo,
                 pergunta: this.pergunta,
                 opcaoA: this.opcaoA,
                 opcaoB: this.opcaoB,
@@ -45,6 +48,7 @@ export default class SimuladoModel {
         return prisma.simulado.update({
             where: { id: this.id },
             data: {
+                conteudo: this.conteudo,
                 pergunta: this.pergunta,
                 opcaoA: this.opcaoA,
                 opcaoB: this.opcaoB,
