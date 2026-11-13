@@ -5,19 +5,15 @@ export default class ParticipantesModel {
         id = null,
         nome,
         curso,
-        curse,
         foto,
         idade,
-        age,
         email,
     } = {}) {
         this.id = id;
         this.nome = nome;
         this.curso = curso;
-        this.curse = curse;
         this.foto = foto;
         this.idade = idade;
-        this.age = age;
         this.email = email;
     }
 
@@ -26,10 +22,8 @@ export default class ParticipantesModel {
             data: {
                 nome: this.nome,
                 curso: this.curso,
-                curse: this.curse,
                 foto: this.foto,
                 idade: this.idade,
-                age: this.age,
                 email: this.email,
             },
         });
@@ -41,10 +35,8 @@ export default class ParticipantesModel {
             data: {
                 nome: this.nome,
                 curso: this.curso,
-                curse: this.curse,
                 foto: this.foto,
                 idade: this.idade,
-                age: this.age,
                 email: this.email,
             },
         });

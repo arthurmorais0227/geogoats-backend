@@ -6,7 +6,7 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const { nome, curso, curse, foto, idade, age, email } = req.body;
+        const { nome, curso, foto, idade, email } = req.body;
 
         if (!nome) {
             return res.status(400).json({ error: 'O campo "nome" é obrigatório!' });
@@ -14,10 +14,6 @@ export const criar = async (req, res) => {
 
         if (!curso) {
             return res.status(400).json({ error: 'O campo "curso" é obrigatório!' });
-        }
-
-        if (!curse) {
-            return res.status(400).json({ error: 'O campo "curse" é obrigatório!' });
         }
 
         if (!foto) {
@@ -28,10 +24,6 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'O campo "idade" é obrigatório!' });
         }
 
-        if (!age) {
-            return res.status(400).json({ error: 'O campo "age" é obrigatório!' });
-        }
-
         if (!email) {
             return res.status(400).json({ error: 'O campo "email" é obrigatório!' });
         }
@@ -39,10 +31,8 @@ export const criar = async (req, res) => {
         const participante = new ParticipantesModel({
             nome,
             curso,
-            curse,
             foto,
             idade,
-            age,
             email,
         });
         const data = await participante.criar();
