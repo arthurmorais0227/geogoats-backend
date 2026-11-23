@@ -190,7 +190,7 @@ CLERK_SECRET_KEY="sk_test_..."
 
 ### Rotas da API
 
-As rotas de leitura de dicas, participantes, simulados, videoaulas e notícias exigem `PUBLIC_API_KEY` no cabeçalho `x-api-key`. Operações de escrita exigem `ADMIN_API_KEY`. As rotas de usuários exigem `ADMIN_API_KEY` para todas as operações.
+As rotas de leitura de dicas, participantes, simulados, videoaulas, notícias, temas, carreiras e estágios exigem `PUBLIC_API_KEY` no cabeçalho `x-api-key`. Operações de escrita exigem `ADMIN_API_KEY`. As rotas de usuários exigem `ADMIN_API_KEY` para todas as operações.
 
 | Recurso | Caminho |
 | --- | --- |
@@ -200,6 +200,9 @@ As rotas de leitura de dicas, participantes, simulados, videoaulas e notícias e
 | Videoaulas | `/videoaulas` |
 | Notícias | `/noticias` |
 | Usuários | `/usuarios` |
+| Temas | `/temas` |
+| Carreiras | `/carreiras` |
+| Estágios | `/estagios` |
 
 Cada recurso oferece `GET /`, `GET /:id`, `POST /`, `PUT /:id` e `DELETE /:id`.
 
