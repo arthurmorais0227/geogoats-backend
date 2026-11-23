@@ -8,6 +8,7 @@ export default class ParticipantesModel {
         foto,
         idade,
         email,
+        createdAt,
     } = {}) {
         this.id = id;
         this.nome = nome;
@@ -15,6 +16,7 @@ export default class ParticipantesModel {
         this.foto = foto;
         this.idade = idade;
         this.email = email;
+        this.createdAt = createdAt;
     }
 
     async criar() {

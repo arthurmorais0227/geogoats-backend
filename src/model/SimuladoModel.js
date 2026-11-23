@@ -12,7 +12,9 @@ export default class SimuladoModel {
         opcaoE,
         respostaCorreta,
         explicacao,
-        materia
+        materia,
+        urlImagem,
+        temaId,
     } = {}) {
         this.id = id;
         this.conteudo = conteudo;
@@ -25,6 +27,8 @@ export default class SimuladoModel {
         this.respostaCorreta = respostaCorreta;
         this.explicacao = explicacao;
         this.materia = materia;
+        this.urlImagem = urlImagem;
+        this.temaId = temaId;
     }
 
     async criar() {
@@ -39,7 +43,9 @@ export default class SimuladoModel {
                 opcaoE: this.opcaoE,
                 respostaCorreta: this.respostaCorreta,
                 explicacao: this.explicacao,
-                materia: this.materia
+                materia: this.materia,
+                urlImagem: this.urlImagem,
+                temaId: this.temaId,
             },
         });
     }
@@ -57,7 +63,9 @@ export default class SimuladoModel {
                 opcaoE: this.opcaoE,
                 respostaCorreta: this.respostaCorreta,
                 explicacao: this.explicacao,
-                materia: this.materia
+                materia: this.materia,
+                urlImagem: this.urlImagem,
+                temaId: this.temaId,
             },
         });
     }
@@ -75,6 +83,10 @@ export default class SimuladoModel {
 
         if (filtros.materia) {
             where.materia = { contains: filtros.materia, mode: 'insensitive' };
+        }
+
+        if (filtros.temaId !== undefined) {
+            where.temaId = Number(filtros.temaId);
         }
 
         return prisma.simulado.findMany({ where });

@@ -9,7 +9,11 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const { nome, email, senha } = req.body;
+        const { nome, email, senha, isAdmin } = req.body;
+
+        if (isAdmin !== undefined && typeof isAdmin !== 'boolean') {
+            return res.status(400).json({ error: 'O campo "isAdmin" deve ser booleano.' });
+        }
 
         if (!nome) {
             return res.status(400).json({ error: 'O campo "nome" é obrigatório!' });
@@ -27,6 +31,7 @@ export const criar = async (req, res) => {
             nome,
             email,
             senha: await bcrypt.hash(senha, 10),
+            isAdmin,
         });
         const data = await usuario.criar();
         return res.status(201).json({
@@ -101,6 +106,12 @@ export const atualizar = async (req, res) => {
         }
         if (req.body.senha !== undefined) {
             usuario.senha = await bcrypt.hash(req.body.senha, 10);
+        }
+        if (req.body.isAdmin !== undefined) {
+            if (typeof req.body.isAdmin !== 'boolean') {
+                return res.status(400).json({ error: 'O campo "isAdmin" deve ser booleano.' });
+            }
+            usuario.isAdmin = req.body.isAdmin;
         }
 
         const data = await usuario.atualizar();

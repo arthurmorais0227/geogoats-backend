@@ -1,12 +1,13 @@
 import prisma from '../lib/services/prismaClient.js';
 
 export default class UsuarioModel {
-    constructor({ id = null, nome, email, senha, criado_em } = {}) {
+    constructor({ id = null, nome, email, senha, isAdmin, criadoEm } = {}) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.criado_em = criado_em;
+        this.isAdmin = isAdmin;
+        this.criadoEm = criadoEm;
     }
 
     async criar() {
@@ -15,6 +16,7 @@ export default class UsuarioModel {
                 nome: this.nome,
                 email: this.email,
                 senha: this.senha,
+                isAdmin: this.isAdmin,
             },
         });
     }
@@ -26,6 +28,7 @@ export default class UsuarioModel {
                 nome: this.nome,
                 email: this.email,
                 senha: this.senha,
+                isAdmin: this.isAdmin,
             },
         });
     }
