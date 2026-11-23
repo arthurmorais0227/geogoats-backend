@@ -8,6 +8,9 @@ import simuladoRoute from './routes/simuladoRoute.js';
 import videoAulaRoute from './routes/videoAulaRoute.js';
 import noticiaRoute from './routes/noticiaRoute.js';
 import usuarioRoute from './routes/usuarioRoute.js';
+import temaRoute from './routes/temaRoute.js';
+import carreiraRoute from './routes/carreiraRoute.js';
+import estagioRoute from './routes/estagioRoute.js';
 
 dotenv.config();
 
@@ -21,6 +24,9 @@ app.use('/simulado', simuladoRoute);
 app.use('/videoaulas', videoAulaRoute);
 app.use('/noticias', noticiaRoute);
 app.use('/usuarios', usuarioRoute);
+app.use('/temas', temaRoute);
+app.use('/carreiras', carreiraRoute);
+app.use('/estagios', estagioRoute);
 
 app.get('/', (req, res) => {
   res.json({
