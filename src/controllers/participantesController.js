@@ -20,8 +20,8 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'O campo "foto" é obrigatório!' });
         }
 
-        if (!idade) {
-            return res.status(400).json({ error: 'O campo "idade" é obrigatório!' });
+        if (!Number.isInteger(idade)) {
+            return res.status(400).json({ error: 'O campo "idade" deve ser um número inteiro!' });
         }
 
         if (!email) {
@@ -97,8 +97,16 @@ export const atualizar = async (req, res) => {
             return res.status(404).json({ error: 'Registro não encontrado para atualizar.' });
         }
 
-        if (req.body.nome!== undefined) {
-            participante.nome = req.body.nome;
+        for (const campo of ['nome', 'curso', 'foto', 'email']) {
+            if (req.body[campo] !== undefined) {
+                participante[campo] = req.body[campo];
+            }
+        }
+        if (req.body.idade !== undefined) {
+            if (!Number.isInteger(req.body.idade)) {
+                return res.status(400).json({ error: 'O campo "idade" deve ser um número inteiro!' });
+            }
+            participante.idade = req.body.idade;
         }
 
         const data = await participante.atualizar();

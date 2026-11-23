@@ -17,6 +17,8 @@ export const criar = async (req, res) => {
             respostaCorreta,
             explicacao,
             materia,
+            urlImagem,
+            temaId,
         } = req.body;
 
         if (!conteudo) {
@@ -59,6 +61,15 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'O campo "materia" é obrigatório!' });
         }
 
+        if (typeof respostaCorreta !== 'string' || respostaCorreta.length !== 1) {
+            return res.status(400).json({ error: 'O campo "respostaCorreta" deve conter uma letra.' });
+        }
+
+        if (temaId !== undefined && temaId !== null
+            && (!Number.isInteger(Number(temaId)) || Number(temaId) <= 0)) {
+            return res.status(400).json({ error: 'O campo "temaId" deve ser um ID válido ou null.' });
+        }
+
         const simulado = new SimuladoModel({
             pergunta,
             conteudo,
@@ -70,6 +81,8 @@ export const criar = async (req, res) => {
             respostaCorreta,
             explicacao,
             materia,
+            urlImagem,
+            temaId: temaId == null ? temaId : Number(temaId),
         });
         
         const data = await simulado.criar();
@@ -82,6 +95,11 @@ export const criar = async (req, res) => {
 
 export const buscarTodos = async (req, res) => {
     try {
+        if (req.query.temaId !== undefined
+            && (!Number.isInteger(Number(req.query.temaId)) || Number(req.query.temaId) <= 0)) {
+            return res.status(400).json({ error: 'O filtro "temaId" deve ser um ID válido.' });
+        }
+
         const registros = await SimuladoModel.buscarTodos(req.query);
 
         if (!registros || registros.length === 0) {
@@ -159,6 +177,9 @@ export const atualizar = async (req, res) => {
             simulado.opcaoE = req.body.opcaoE;
         }
         if (req.body.respostaCorreta !== undefined) {
+            if (typeof req.body.respostaCorreta !== 'string' || req.body.respostaCorreta.length !== 1) {
+                return res.status(400).json({ error: 'O campo "respostaCorreta" deve conter uma letra.' });
+            }
             simulado.respostaCorreta = req.body.respostaCorreta;
         }
         if (req.body.explicacao !== undefined) {
@@ -166,6 +187,16 @@ export const atualizar = async (req, res) => {
         }
         if (req.body.materia !== undefined) {
             simulado.materia = req.body.materia;
+        }
+        if (req.body.urlImagem !== undefined) {
+            simulado.urlImagem = req.body.urlImagem;
+        }
+        if (req.body.temaId !== undefined) {
+            const temaId = req.body.temaId;
+            if (temaId !== null && (!Number.isInteger(Number(temaId)) || Number(temaId) <= 0)) {
+                return res.status(400).json({ error: 'O campo "temaId" deve ser um ID válido ou null.' });
+            }
+            simulado.temaId = temaId === null ? null : Number(temaId);
         }
 
         const data = await simulado.atualizar();

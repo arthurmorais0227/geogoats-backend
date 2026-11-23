@@ -1,19 +1,21 @@
 import prisma from '../lib/services/prismaClient.js';
 
 export default class VideoAulaModel {
-    constructor({ id = null, conteudo, urlMidia, descricao } = {}) {
+    constructor({ id = null, titulo, descricao, urlMidia, temaId } = {}) {
         this.id = id;
-        this.conteudo = conteudo;
-        this.urlMidia = urlMidia;
+        this.titulo = titulo;
         this.descricao = descricao;
+        this.urlMidia = urlMidia;
+        this.temaId = temaId;
     }
 
     async criar() {
         return prisma.videoAula.create({
             data: {
-                conteudo: this.conteudo,
-                urlMidia: this.urlMidia,
+                titulo: this.titulo,
                 descricao: this.descricao,
+                urlMidia: this.urlMidia,
+                temaId: this.temaId,
             },
         });
     }
@@ -22,9 +24,10 @@ export default class VideoAulaModel {
         return prisma.videoAula.update({
             where: { id: this.id },
             data: {
-                conteudo: this.conteudo,
-                urlMidia: this.urlMidia,
+                titulo: this.titulo,
                 descricao: this.descricao,
+                urlMidia: this.urlMidia,
+                temaId: this.temaId,
             },
         });
     }
@@ -36,8 +39,12 @@ export default class VideoAulaModel {
     static async buscarTodos(filtros = {}) {
         const where = {};
 
-        if (filtros.conteudo) {
-            where.conteudo = { contains: filtros.conteudo, mode: 'insensitive' };
+        if (filtros.titulo) {
+            where.titulo = { contains: filtros.titulo, mode: 'insensitive' };
+        }
+
+        if (filtros.temaId !== undefined) {
+            where.temaId = Number(filtros.temaId);
         }
 
         return prisma.videoAula.findMany({ where });

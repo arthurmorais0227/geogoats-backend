@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -8,35 +9,25 @@ generator client {
 }
 
 model Usuario {
-  id         Int      @id @default(autoincrement())
-  nome       String   @db.VarChar(100)
-  email      String   @unique @db.VarChar(100)
-  senha      String   @db.VarChar(255)
-  isAdmin    Boolean  @default(false)
-  criadoEm   DateTime @default(now())
-  
-  resultados SimuladoResultado[]
+  id       Int      @id @default(autoincrement())
+  nome     String   @db.VarChar(100)
+  email    String   @unique @db.VarChar(100)
+  senha    String   @db.VarChar(255)
+  isAdmin  Boolean  @default(false)
+  criadoEm DateTime @default(now())
 
   @@map("usuarios")
 }
 
-// Tabela estrutural para dividir a Geografia (Ex: Cartografia, Climatologia)
 model Tema {
-  id          Int      @id @default(autoincrement())
-  nome        String   @unique
-  descricao   String?  @db.Text
-  
-  // É uma versão do nome adaptada para funcionar em links e buscas.
-  // Exemplo: Se o nome for "Geografia Física", o slug será salvo como "geografia-fisica".
-  slug        String   @unique 
-  
-  // CAMPO PARA A API DO PLANETA INTERATIVO:
-  // Como o planeta vem de fora, ele pode não entender o nome "Cartografia".
-  codigoApi   String?  
-
-  simulados   Simulado[]
-  videos      VideoAula[]
-  dicas       Dica[]
+  id        Int     @id @default(autoincrement())
+  nome      String  @unique @db.VarChar(100)
+  descricao String? @db.Text
+  slug      String  @unique @db.VarChar(100)
+  codigoApi String?
+  simulados Simulado[]
+  videos    VideoAula[]
+  dicas     Dica[]
 
   @@map("temas")
 }
@@ -46,7 +37,7 @@ model Noticia {
   titulo         String   @db.VarChar(200)
   resumo         String   @db.VarChar(255)
   conteudo       String   @db.Text
-  urlImagem      String?  @db.VarChar(255)
+  urlImagem      String?  @db.VarChar(500)
   dataPublicacao DateTime @default(now())
 
   @@map("noticias")
@@ -54,25 +45,25 @@ model Noticia {
 
 model Carreira {
   id                 Int      @id @default(autoincrement())
-  nome               String
+  nome               String   @db.VarChar(150)
   descricao          String?  @db.Text
   cursosRelacionados String[]
   habilidades        String[]
-  img                String?
+  img                String?  @db.VarChar(500)
   salarioMedio       String?
+  criadoEm           DateTime @default(now())
   atualizadoEm       DateTime @updatedAt
 
   @@map("carreiras")
 }
 
 model Dica {
-  id        Int      @id @default(autoincrement())
-  titulo    String
-  conteudo  String   @db.Text
-  foto      String?
-
-  temaId    Int?
-  tema      Tema?    @relation(fields: [temaId], references: [id], onDelete: SetNull)
+  id       Int     @id @default(autoincrement())
+  titulo   String  @db.VarChar(150)
+  conteudo String  @db.Text
+  foto     String? @db.VarChar(500)
+  temaId Int?
+  tema   Tema? @relation(fields: [temaId], references: [id], onDelete: SetNull)
 
   @@map("dicas")
 }
@@ -82,66 +73,53 @@ model Estagio {
   titulo             String   @db.VarChar(200)
   descricao          String   @db.Text
   cursosRelacionados String[]
-  empresa            String?
+  empresa            String?  @db.VarChar(150)
   requisitos         String?  @db.Text
-  urlInscricao       String?
+  urlInscricao       String?  @db.VarChar(500)
   dataPublicacao     DateTime @default(now())
 
   @@map("estagios")
 }
 
 model Simulado {
-  id              Int      @id @default(autoincrement())
-  pergunta        String   @db.Text
-  opcaoA          String
-  opcaoB          String
-  opcaoC          String
-  opcaoD          String
-  opcaoE          String?
-  respostaCorreta String
-  explicacao      String   @db.Text
-  foto            String?
-  
-  temaId          Int?
-  tema            Tema?    @relation(fields: [temaId], references: [id], onDelete: SetNull)
+  id              Int     @id @default(autoincrement())
+  conteudo        String  @db.Text
+  pergunta        String  @db.Text
+  opcaoA          String  @db.Text
+  opcaoB          String  @db.Text
+  opcaoC          String  @db.Text
+  opcaoD          String  @db.Text
+  opcaoE          String  @db.Text
+  respostaCorreta String  @db.VarChar(1)
+  explicacao      String  @db.Text
+  materia         String  @db.VarChar(100)
+  urlImagem            String? @db.VarChar(500)
 
-  resultados      SimuladoResultado[]
+  temaId Int?
+  tema   Tema? @relation(fields: [temaId], references: [id], onDelete: SetNull)
 
   @@map("simulados")
 }
 
-model SimuladoResultado {
-  id           Int      @id @default(autoincrement())
-  usuarioId    Int
-  simuladoId   Int
-  acertou      Boolean
-  respondidoEm DateTime @default(now())
-
-  // ON DELETE CASCADE? deletar um Usuário ou uma Pergunta do Simulado apaga automaticamente tudo ligado a ele no banco, evitando erros de "dados fantasmas".
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  simulado    Simulado @relation(fields: [simuladoId], references: [id], onDelete: Cascade)
-
-  @@map("simulado_resultados")
-}
-
 model VideoAula {
-  id        Int      @id @default(autoincrement())
-  titulo    String
-  descricao String   @db.Text
-  urlMidia  String
-  
-  temaId    Int?
-  tema      Tema?    @relation(fields: [temaId], references: [id], onDelete: SetNull)
-  
+  id        Int     @id @default(autoincrement())
+  titulo    String  @db.VarChar(200)
+  descricao String  @db.Text
+  urlMidia  String  @db.VarChar(500)
+  temaId Int?
+  tema   Tema? @relation(fields: [temaId], references: [id], onDelete: SetNull)
+
   @@map("video_aulas")
 }
 
-model Equipe {
+model Participantes {
   id        Int      @id @default(autoincrement())
-  nome      String
-  funcao    String
-  foto      String?
-  biografia String?  @db.Text
+  nome      String   @db.VarChar(150)
+  curso     String   @db.VarChar(100)
+  foto      String   @db.VarChar(500)
+  idade     Int
+  email     String   @unique @db.VarChar(150)
+  createdAt DateTime @default(now())
 
-  @@map("equipe")
+  @@map("participantes")
 }
