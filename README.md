@@ -13,7 +13,7 @@ Este projeto é fruto do **Projeto Integrador Final** do curso **Técnico em Des
 
 O portal foi concebido para resolver a fragmentação e a desatualização das informações sobre Geografia disponíveis para alunos do Ensino Médio, oferecendo um ambiente único, dinâmico e confiável que fortalece o aprendizado, o interesse pela disciplina e a preparação dos alunos para vestibulares e para o mundo do trabalho.
 
-A aplicação é moderna, responsiva e integrada a um banco de dados **PostgreSQL**, com **painel administrativo protegido por autenticação via Clerk** para gerenciamento de notícias (CRUD completo). O projeto é versionado no **GitHub** (repositórios de Front-end e Back-end), testado com **Cypress** e publicado em produção.
+A aplicação é moderna, responsiva e integrada a um banco de dados **PostgreSQL**, com **painel administrativo protegido por chaves de API** e autenticação por **JWT** para gerenciamento de notícias (CRUD completo). O projeto é versionado no **GitHub** (repositórios de Front-end e Back-end), testado com **Cypress** e publicado em produção.
 
 ### Objetivo Principal
 
@@ -33,7 +33,7 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 - **Arquitetura:** API REST / Route Handlers (Next.js)
 - **ORM:** Prisma
 - **Banco de Dados:** PostgreSQL
-- **Autenticação:** Clerk
+- **Autenticação:** chaves de API (`x-api-key`) e JWT
 
 ### Frontend
 
@@ -132,7 +132,7 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 
 - **Node.js** instalado (versão LTS recomendada)
 - **PostgreSQL** configurado (local ou serviço em nuvem — Neon/Supabase)
-- Conta no **Clerk** configurada (chaves de API)
+- Chaves de API e segredo JWT configurados
 - **Git** instalado
 
 ### Passo a passo
@@ -153,7 +153,7 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
     cd geogoats-backend
     npm install
     # Configure suas variáveis de ambiente no arquivo .env
-    # Ex.: DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY
+    # Ex.: DATABASE_URL, PORT (opcional; padrão 3000), PUBLIC_API_KEY, ADMIN_API_KEY, JWT_SECRET
     npx prisma migrate dev
     npm run dev
     ```
@@ -177,8 +177,11 @@ Alunos do Ensino Médio (especialmente da rede SESI/SENAI), professores de Geogr
 ```env
 # Back-end (.env)
 DATABASE_URL="postgresql://usuario:senha@host:5432/geogoats"
-CLERK_SECRET_KEY="sk_test_..."
-CLERK_PUBLISHABLE_KEY="pk_test_..."
+# Opcional; padrão 3000
+PORT=3000
+PUBLIC_API_KEY="sua-chave-publica"
+ADMIN_API_KEY="sua-chave-admin"
+JWT_SECRET="seu-segredo-jwt"
 
 # Front-end (.env.local)
 NEXT_PUBLIC_API_URL="http://localhost:3001"
@@ -190,7 +193,7 @@ CLERK_SECRET_KEY="sk_test_..."
 
 ### Rotas da API
 
-As rotas de leitura de dicas, participantes, simulados, videoaulas, notícias, temas, carreiras e estágios exigem `PUBLIC_API_KEY` no cabeçalho `x-api-key`. Operações de escrita exigem `ADMIN_API_KEY`. As rotas de usuários exigem `ADMIN_API_KEY` para todas as operações.
+As rotas de leitura de dicas, participantes, simulados, videoaulas, notícias, temas, carreiras e estágios, além do login, exigem `PUBLIC_API_KEY` no cabeçalho `x-api-key`. O login retorna um JWT. Operações de escrita exigem `ADMIN_API_KEY`. As rotas de usuários exigem `ADMIN_API_KEY` para todas as operações.
 
 | Recurso | Caminho |
 | --- | --- |
@@ -224,7 +227,7 @@ Quando disponíveis:
 O projeto contempla o **teste E2E obrigatório** com Cypress, cobrindo o fluxo completo:
 
 1. Acesso ao portal e navegação até a página de login administrativo.
-2. Login com Clerk (conta administrativa de teste).
+2. Login com JWT (conta administrativa de teste).
 3. Acesso ao painel administrativo protegido.
 4. Cadastro de uma nova notícia via formulário.
 5. Validação da persistência real no PostgreSQL via Prisma.

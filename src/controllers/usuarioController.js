@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import UsuarioModel from '../model/UsuarioModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 const semSenha = ({ senha, ...usuario }) => usuario;
 
@@ -39,6 +40,7 @@ export const criar = async (req, res) => {
             data: semSenha(data),
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -47,11 +49,6 @@ export const criar = async (req, res) => {
 export const buscarTodos = async (req, res) => {
     try {
         const registros = await UsuarioModel.buscarTodos(req.query);
-
-        if (!registros || registros.length === 0) {
-            return res.status(400).json({ message: 'Nenhum registro encontrado.' });
-        }
-
         return res.status(200).json(registros.map(semSenha));
     } catch (error) {
         console.error('Erro ao buscar:', error);
@@ -120,6 +117,7 @@ export const atualizar = async (req, res) => {
             data: semSenha(data),
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }

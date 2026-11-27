@@ -1,4 +1,5 @@
 import ParticipantesModel from '../model/ParticipantesModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 export const criar = async (req, res) => {
     try {
@@ -38,6 +39,7 @@ export const criar = async (req, res) => {
         const data = await participante.criar();
         return res.status(201).json({ message: 'Registro criado com sucesso!', data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -46,11 +48,6 @@ export const criar = async (req, res) => {
 export const buscarTodos = async (req, res) => {
     try {
         const registros = await ParticipantesModel.buscarTodos(req.query);
-
-        if (!registros || registros.length === 0) {
-            return res.status(400).json({ message: 'Nenhum registro encontrado.' });
-        }
-
         return res.status(200).json(registros);
     } catch (error) {
         console.error('Erro ao buscar:', error);
@@ -115,6 +112,7 @@ export const atualizar = async (req, res) => {
             .status(200)
             .json({ message: `O registro "${data.nome}" foi atualizado com sucesso!`, data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }

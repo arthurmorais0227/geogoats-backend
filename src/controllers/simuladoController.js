@@ -1,4 +1,5 @@
 import SimuladoModel from '../model/SimuladoModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 export const criar = async (req, res) => {
     try {
@@ -61,8 +62,8 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'O campo "materia" é obrigatório!' });
         }
 
-        if (typeof respostaCorreta !== 'string' || respostaCorreta.length !== 1) {
-            return res.status(400).json({ error: 'O campo "respostaCorreta" deve conter uma letra.' });
+        if (typeof respostaCorreta !== 'string' || !/^[A-Ea-e]$/.test(respostaCorreta)) {
+            return res.status(400).json({ error: 'O campo "respostaCorreta" deve ser uma letra de A a E.' });
         }
 
         if (temaId !== undefined && temaId !== null
@@ -78,7 +79,7 @@ export const criar = async (req, res) => {
             opcaoC,
             opcaoD,
             opcaoE,
-            respostaCorreta,
+            respostaCorreta: respostaCorreta.toUpperCase(),
             explicacao,
             materia,
             urlImagem,
@@ -88,6 +89,7 @@ export const criar = async (req, res) => {
         const data = await simulado.criar();
         return res.status(201).json({ message: 'Registro criado com sucesso!', data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -101,10 +103,6 @@ export const buscarTodos = async (req, res) => {
         }
 
         const registros = await SimuladoModel.buscarTodos(req.query);
-
-        if (!registros || registros.length === 0) {
-            return res.status(404).json({ message: 'Nenhum registro encontrado.' });
-        }
 
         return res.status(200).json(registros);
     } catch (error) {
@@ -177,10 +175,10 @@ export const atualizar = async (req, res) => {
             simulado.opcaoE = req.body.opcaoE;
         }
         if (req.body.respostaCorreta !== undefined) {
-            if (typeof req.body.respostaCorreta !== 'string' || req.body.respostaCorreta.length !== 1) {
-                return res.status(400).json({ error: 'O campo "respostaCorreta" deve conter uma letra.' });
+            if (typeof req.body.respostaCorreta !== 'string' || !/^[A-Ea-e]$/.test(req.body.respostaCorreta)) {
+                return res.status(400).json({ error: 'O campo "respostaCorreta" deve ser uma letra de A a E.' });
             }
-            simulado.respostaCorreta = req.body.respostaCorreta;
+            simulado.respostaCorreta = req.body.respostaCorreta.toUpperCase();
         }
         if (req.body.explicacao !== undefined) {
             simulado.explicacao = req.body.explicacao;
@@ -206,6 +204,7 @@ export const atualizar = async (req, res) => {
             data,
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }

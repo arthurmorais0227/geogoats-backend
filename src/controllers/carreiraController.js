@@ -1,4 +1,5 @@
 import CarreiraModel from '../model/CarreiraModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 const textoValido = (valor) => typeof valor === 'string' && valor.trim().length > 0;
 const textoOpcionalValido = (valor) => valor === null || typeof valor === 'string';
@@ -45,6 +46,7 @@ export const criar = async (req, res) => {
         const data = await carreira.criar();
         return res.status(201).json({ message: 'Carreira criada com sucesso!', data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar carreira:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -53,10 +55,6 @@ export const criar = async (req, res) => {
 export const buscarTodos = async (req, res) => {
     try {
         const registros = await CarreiraModel.buscarTodos(req.query);
-        if (registros.length === 0) {
-            return res.status(400).json({ message: 'Nenhum registro encontrado.' });
-        }
-
         return res.status(200).json(registros);
     } catch (error) {
         console.error('Erro ao buscar carreiras:', error);
@@ -130,6 +128,7 @@ export const atualizar = async (req, res) => {
             data,
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar carreira:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }

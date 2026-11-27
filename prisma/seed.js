@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -18,29 +19,23 @@ const q = (pergunta, [opcaoA, opcaoB, opcaoC, opcaoD, opcaoE], respostaCorreta, 
 async function main() {
   console.log('🌎 Iniciando seed do geoGoats...');
 
-  // ATENÇÃO: apaga os dados existentes antes de inserir os exemplos.
-  // Ordem: primeiro quem depende de Tema, depois Tema, depois o resto.
-  await prisma.simulado.deleteMany();
-  await prisma.dica.deleteMany();
-  await prisma.videoAula.deleteMany();
-  await prisma.tema.deleteMany();
-  await prisma.noticia.deleteMany();
-  await prisma.carreira.deleteMany();
-  await prisma.estagio.deleteMany();
-  await prisma.usuario.deleteMany();
-  await prisma.participantes.deleteMany();
+  // ATENÇÃO: apaga TODOS os dados existentes antes de inserir os exemplos.
+  // TRUNCATE ... RESTART IDENTITY zera os contadores de ID, então, a cada
+  // execução, os registros voltam a ter id 1, 2, 3... (deleteMany não faz isso).
+  // Os nomes abaixo são os de @@map no schema.prisma.
+  await prisma.$executeRaw`TRUNCATE TABLE "simulados", "dicas", "video_aulas", "temas", "noticias", "carreiras", "estagios", "usuarios", "participantes" RESTART IDENTITY CASCADE`;
 
   // ---------------------------------------------------------------
   // PARTICIPANTES (idade agora é Int)
   // ---------------------------------------------------------------
-  await prisma.participantes.createMany({
+  const participantesCriados = await prisma.participantes.createMany({
     data: [
       { nome: 'Arthur Morais', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/201222799?s=400&u=090d45c9e4e5bd0bbe9ff6e7f891b905ac8744b7&v=4', idade: 17, email: 'arthur.m.santos20@aluno.senai.br' },
       { nome: 'Gustavo Lisboa', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/155676204?v=4', idade: 17, email: 'gustavo.t.lisboa@aluno.senai.br' },
       { nome: 'Fábio Henrique', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/201291219?v=4', idade: 17, email: 'fabio.trevizolli@aluno.senai.br' },
       { nome: 'João Gomes', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/203624805?v=4', idade: 18, email: 'joao.v.gomes50@aluno.senai.br' },
       { nome: 'Rafael Santos', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/202285790?v=4', idade: 18, email: 'rafael.s.mendes6@aluno.senai.br' },
-      { nome: 'João Strupicio', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/197295392?v=4', idade: 18, email: 'joao.stopiglia@aluno.senai.br' },
+      { nome: 'João Stopiglia', curso: 'Desenvolvimento de Sistemas', foto: 'https://avatars.githubusercontent.com/u/197295392?v=4', idade: 18, email: 'joao.stopiglia@aluno.senai.br' },
     ],
   });
 
@@ -68,7 +63,7 @@ async function main() {
   // ---------------------------------------------------------------
   // VIDEOAULAS (antigo "conteudo" agora é "titulo" + temaId)
   // ---------------------------------------------------------------
-  await prisma.videoAula.createMany({
+  const videosCriados = await prisma.videoAula.createMany({
     data: [
       {
         titulo: 'Geografia Agrária e Estrutura Fundiária',
@@ -136,7 +131,7 @@ async function main() {
   // ---------------------------------------------------------------
   // DICAS (antigo "conteudo" -> "titulo"; antigo "dicas" -> "conteudo")
   // ---------------------------------------------------------------
-  await prisma.dica.createMany({
+  const dicasCriadas = await prisma.dica.createMany({
     data: [
       {
         titulo: 'Diferencie tempo atmosférico e clima.',
@@ -395,7 +390,11 @@ async function main() {
   const senhaAdmin = process.env.SEED_ADMIN_PASSWORD || 'Admin@12345';
   const senhaArthur = process.env.SEED_ARTHUR_PASSWORD || 'Arthur@12345';
 
-  await prisma.usuario.createMany({
+  if (!process.env.SEED_ADMIN_PASSWORD || !process.env.SEED_ARTHUR_PASSWORD) {
+    console.warn('⚠️  Usando senhas padrão do seed (públicas no repositório). Defina SEED_ADMIN_PASSWORD e SEED_ARTHUR_PASSWORD no .env fora de ambiente de testes.');
+  }
+
+  const usuariosCriados = await prisma.usuario.createMany({
     data: [
       {
         nome: 'Administrador',
@@ -420,35 +419,35 @@ async function main() {
     {
       titulo: 'Brasil aprova plano para combater o desmatamento até 2030',
       resumo: 'Governo federal aprovou um conjunto de medidas para interromper e reverter o desmatamento e a degradação florestal.',
-      conteudo: 'Em novembro de 2026, o governo federal aprovou o Mapa do Caminho brasileiro para interromper e reverter o desmatamento e a degradação florestal até 2030. A proposta reúne ações de conservação e uso sustentável das florestas, restauração, combate ao desmatamento ilegal e prevenção de incêndios. O tema evidencia a relação entre políticas públicas, uso do território e conservação ambiental. Fonte: https://www.gov.br/mma/pt-br/noticias/governo-federal-aprova-mapa-do-caminho-brasileiro-para-interromper-e-reverter-o-desmatamento-e-a-degradacao-florestal-ate-2030/',
+      conteudo: 'Em novembro de 2026, o governo federal aprovou o Mapa do Caminho brasileiro para interromper e reverter o desmatamento e a degradação florestal até 2030. A proposta reúne ações de conservação e uso sustentável das florestas, restauração, combate ao desmatamento ilegal e prevenção de incêndios. O tema evidencia a relação entre políticas públicas, uso do território e conservação ambiental. Fonte: https://agenciagov.ebc.com.br/noticias/202611/governo-federal-aprova-mapa-do-caminho-brasileiro-para-interromper-e-reverter-o-desmatamento-e-a-degradacao-florestal-ate-2030-1',
       urlImagem: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200',
       dataPublicacao: new Date('2026-11-06T12:00:00-03:00'),
     },
     {
       titulo: 'Pesquisa aponta impactos ambientais em 74,3% dos municípios brasileiros',
       resumo: 'Levantamento do IBGE identificou ocorrências como secas, alagamentos e deslizamentos em grande parte das cidades.',
-      conteudo: 'Dados divulgados pelo IBGE em novembro de 2026 indicaram que 4.140 dos 5.571 municípios brasileiros, equivalentes a 74,3%, registraram algum impacto ambiental nos dois anos anteriores à pesquisa. Entre os eventos considerados estão secas, alagamentos e deslizamentos. O levantamento reforça a importância do planejamento territorial, da prevenção de riscos e da adaptação das cidades às mudanças ambientais. Fonte: https://agenciabrasil.ebc.com.br/meio-ambiente/noticia/2026-11/tres-em-cada-quatro-municipios-sofreram-impacto-ambiental-em-dois-anos',
+      conteudo: 'Dados divulgados pelo IBGE em novembro de 2026 indicaram que 4.140 dos 5.571 municípios brasileiros, equivalentes a 74,3%, registraram algum impacto ambiental nos dois anos anteriores à pesquisa. Entre os eventos considerados estão secas, alagamentos e deslizamentos. O levantamento reforça a importância do planejamento territorial, da prevenção de riscos e da adaptação das cidades às mudanças ambientais. Fonte: https://www.canalrural.com.br/politica/ibge-diz-que-743-dos-municipios-registraram-impactos-ambientais-em-dois-anos/',
       urlImagem: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=1200',
       dataPublicacao: new Date('2026-11-11T10:00:00-03:00'),
     },
     {
       titulo: 'Desmatamento na Amazônia e no Cerrado registra queda em 2026',
       resumo: 'Monitoramento do INPE apontou redução nas áreas desmatadas dos dois biomas no período de agosto de 2025 a julho de 2026.',
-      conteudo: 'Dados do Programa de Monitoramento dos Biomas Brasileiros, divulgados em outubro de 2026, apontaram redução de 41,8% do desmatamento na Amazônia e de 23,8% no Cerrado em comparação com o período anterior. Os números mostram a importância do monitoramento por satélite e permitem discutir políticas de conservação, fiscalização e mudanças no uso da terra. Fonte: https://www.gov.br/inpe/pt-br/assuntos/ultimas-noticias/brasil-alcanca-menores-taxas-de-desmatamento-da-serie-historica-na-amazonia-e-no-cerrado/',
+      conteudo: 'Dados do Programa de Monitoramento dos Biomas Brasileiros, divulgados em outubro de 2026, apontaram redução de 41,8% do desmatamento na Amazônia e de 23,8% no Cerrado em comparação com o período anterior. Os números mostram a importância do monitoramento por satélite e permitem discutir políticas de conservação, fiscalização e mudanças no uso da terra. Fonte: https://www.oliberal.com/politica/desmatamento-cai-41-8-na-amazonia-e-23-8-no-cerrado-em-um-ano-1.1183514',
       urlImagem: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=1200',
       dataPublicacao: new Date('2026-10-16T15:17:00-03:00'),
     },
     {
       titulo: 'Relatório registra redução do desmatamento nos biomas brasileiros em 2025',
       resumo: 'O Relatório Anual do Desmatamento apontou queda de 20,6% na área desmatada em relação a 2024.',
-      conteudo: 'O Relatório Anual do Desmatamento no Brasil, divulgado pelo MapBiomas em maio de 2026, registrou 984.794 hectares desmatados em 2025, uma redução de 20,6% em relação a 2024. Apesar da queda, o Cerrado concentrou a maior área desmatada no período. O dado permite discutir diferenças regionais, expansão agropecuária e políticas de proteção dos biomas. Fonte: https://agenciabrasil.ebc.com.br/meio-ambiente/noticia/2026-05/desmatamento-no-brasil-registra-queda-de-206-em-2025',
+      conteudo: 'O Relatório Anual do Desmatamento no Brasil, divulgado pelo MapBiomas em maio de 2026, registrou 984.794 hectares desmatados em 2025, uma redução de 20,6% em relação a 2024. Apesar da queda, o Cerrado concentrou a maior área desmatada no período. O dado permite discutir diferenças regionais, expansão agropecuária e políticas de proteção dos biomas. Fonte: https://alerta.mapbiomas.org/wp-content/uploads/sites/17/2026/05/Factsheet-RAD-26052026-1.pdf',
       urlImagem: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=1200',
       dataPublicacao: new Date('2026-05-27T06:00:00-03:00'),
     },
     {
       titulo: 'Brasil apresenta dados de emprego e transformações no mercado de trabalho',
       resumo: 'PNAD Contínua divulgou indicadores de ocupação e desocupação referentes ao ano de 2025.',
-      conteudo: 'Segundo divulgação do IBGE em janeiro de 2026, a taxa anual de desocupação no Brasil foi de 5,6% em 2025. O levantamento também apresentou mudanças na distribuição da ocupação entre setores econômicos, incluindo indústria, serviços e atividades agropecuárias. Os indicadores ajudam a compreender a organização econômica do território e as diferenças entre atividades urbanas e rurais. Fonte: https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/45759-pnad-continua-em-2025-taxa-anual-de-desocupacao-foi-de-5-6-enquanto-taxa-de-subutilizacao-foi-14-5',
+      conteudo: 'Segundo divulgação do IBGE em janeiro de 2026, a taxa anual de desocupação no Brasil foi de 5,6% em 2025. O levantamento também apresentou mudanças na distribuição da ocupação entre setores econômicos, incluindo indústria, serviços e atividades agropecuárias. Os indicadores ajudam a compreender a organização econômica do território e as diferenças entre atividades urbanas e rurais. Fonte: https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/45759',
       urlImagem: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
       dataPublicacao: new Date('2026-01-30T09:00:00-03:00'),
     },
@@ -462,21 +461,21 @@ async function main() {
     {
       titulo: 'Cidades brasileiras enfrentam o desafio de se adaptar a eventos extremos',
       resumo: 'Secas, ondas de calor, enchentes e deslizamentos reforçam a necessidade de planejamento urbano e prevenção.',
-      conteudo: 'Eventos extremos representam desafios crescentes para cidades de diferentes regiões. A ocupação de áreas de risco, a impermeabilização do solo, a retirada de vegetação e a infraestrutura insuficiente podem ampliar os impactos de chuvas intensas e ondas de calor. Medidas como sistemas de alerta, drenagem, arborização e ordenamento territorial são importantes para reduzir vulnerabilidades. Contexto e dados municipais: https://agenciabrasil.ebc.com.br/meio-ambiente/noticia/2026-11/tres-em-cada-quatro-municipios-sofreram-impacto-ambiental-em-dois-anos',
+      conteudo: 'Eventos extremos representam desafios crescentes para cidades de diferentes regiões. A ocupação de áreas de risco, a impermeabilização do solo, a retirada de vegetação e a infraestrutura insuficiente podem ampliar os impactos de chuvas intensas e ondas de calor. Medidas como sistemas de alerta, drenagem, arborização e ordenamento territorial são importantes para reduzir vulnerabilidades. Contexto e dados municipais: https://www.canalrural.com.br/politica/ibge-diz-que-743-dos-municipios-registraram-impactos-ambientais-em-dois-anos/',
       urlImagem: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200',
       dataPublicacao: new Date('2026-11-11T12:00:00-03:00'),
     },
     {
       titulo: 'Monitoramento por satélite fortalece a fiscalização ambiental no Brasil',
       resumo: 'Informações espaciais ajudam a identificar alterações na cobertura vegetal e orientar ações de fiscalização.',
-      conteudo: 'O monitoramento por satélite é uma ferramenta importante para acompanhar mudanças na cobertura e no uso da terra. No Brasil, sistemas do INPE produzem informações que apoiam a identificação de alertas e o acompanhamento do desmatamento. Esses dados ajudam órgãos públicos, pesquisadores e a sociedade a compreender a dinâmica territorial e avaliar políticas ambientais. Referência: https://www.gov.br/inpe/pt-br/assuntos/ultimas-noticias/brasil-alcanca-menores-taxas-de-desmatamento-da-serie-historica-na-amazonia-e-no-cerrado/',
+      conteudo: 'O monitoramento por satélite é uma ferramenta importante para acompanhar mudanças na cobertura e no uso da terra. No Brasil, sistemas do INPE produzem informações que apoiam a identificação de alertas e o acompanhamento do desmatamento. Esses dados ajudam órgãos públicos, pesquisadores e a sociedade a compreender a dinâmica territorial e avaliar políticas ambientais. Referência: https://www.oliberal.com/politica/desmatamento-cai-41-8-na-amazonia-e-23-8-no-cerrado-em-um-ano-1.1183514',
       urlImagem: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1200',
       dataPublicacao: new Date('2026-10-20T12:00:00-03:00'),
     },
     {
       titulo: 'Expansão agropecuária mantém o debate sobre uso sustentável do Cerrado',
       resumo: 'O avanço de atividades produtivas na região do Matopiba evidencia a tensão entre produção, conservação e recursos hídricos.',
-      conteudo: 'O Cerrado é estratégico para a biodiversidade e para a disponibilidade de água em diversas bacias hidrográficas brasileiras. A expansão agropecuária em áreas do Matopiba, região que abrange partes do Maranhão, Tocantins, Piauí e Bahia, exige atenção ao planejamento do uso da terra, à conservação da vegetação nativa e à proteção de nascentes. Dados recentes de monitoramento do desmatamento ajudam a acompanhar essas transformações. Fonte: https://www.gov.br/inpe/pt-br/assuntos/ultimas-noticias/brasil-alcanca-menores-taxas-de-desmatamento-da-serie-historica-na-amazonia-e-no-cerrado/',
+      conteudo: 'O Cerrado é estratégico para a biodiversidade e para a disponibilidade de água em diversas bacias hidrográficas brasileiras. A expansão agropecuária em áreas do Matopiba, região que abrange partes do Maranhão, Tocantins, Piauí e Bahia, exige atenção ao planejamento do uso da terra, à conservação da vegetação nativa e à proteção de nascentes. Dados recentes de monitoramento do desmatamento ajudam a acompanhar essas transformações. Fonte: https://www.oliberal.com/politica/desmatamento-cai-41-8-na-amazonia-e-23-8-no-cerrado-em-um-ano-1.1183514',
       urlImagem: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200',
       dataPublicacao: new Date('2026-10-22T12:00:00-03:00'),
     },
@@ -564,12 +563,12 @@ async function main() {
   await prisma.estagio.createMany({ data: estagios });
 
   console.log('✅ Seed do geoGoats concluído!');
-  console.log(`👥 ${6} participantes cadastrados.`);
+  console.log(`👥 ${participantesCriados.count} participantes cadastrados.`);
   console.log(`🗂️  ${temasData.length} temas cadastrados.`);
-  console.log('🎬 10 videoaulas cadastradas.');
-  console.log('💡 25 dicas de Geografia cadastradas.');
+  console.log(`🎬 ${videosCriados.count} videoaulas cadastradas.`);
+  console.log(`💡 ${dicasCriadas.count} dicas de Geografia cadastradas.`);
   console.log(`📝 ${simulados.length} questões cadastradas (5 por tema).`);
-  console.log('🔐 2 usuários cadastrados.');
+  console.log(`🔐 ${usuariosCriados.count} usuários cadastrados.`);
   console.log(`📰 ${noticias.length} notícias cadastradas.`);
   console.log(`💼 ${carreiras.length} carreiras cadastradas.`);
   console.log(`🎓 ${estagios.length} estágios cadastrados.`);

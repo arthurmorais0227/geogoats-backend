@@ -1,4 +1,5 @@
 import VideoAulaModel from '../model/VideoAulaModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 const temaIdValido = (temaId) =>
     temaId === null || (Number.isInteger(Number(temaId)) && Number(temaId) > 0);
@@ -32,6 +33,7 @@ export const criar = async (req, res) => {
         const data = await videoAula.criar();
         return res.status(201).json({ message: 'Videoaula criada com sucesso!', data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar videoaula:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -45,10 +47,6 @@ export const buscarTodos = async (req, res) => {
         }
 
         const registros = await VideoAulaModel.buscarTodos(req.query);
-        if (registros.length === 0) {
-            return res.status(400).json({ message: 'Nenhum registro encontrado.' });
-        }
-
         return res.status(200).json(registros);
     } catch (error) {
         console.error('Erro ao buscar videoaulas:', error);
@@ -110,6 +108,7 @@ export const atualizar = async (req, res) => {
             data,
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar videoaula:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }

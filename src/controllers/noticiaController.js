@@ -1,4 +1,5 @@
 import NoticiaModel from '../model/NoticiaModel.js';
+import { tratarErroPrisma } from '../utils/prismaErrors.js';
 
 export const criar = async (req, res) => {
     try {
@@ -31,6 +32,7 @@ export const criar = async (req, res) => {
         const data = await noticia.criar();
         return res.status(201).json({ message: 'Notícia criada com sucesso!', data });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao criar notícia:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
     }
@@ -39,10 +41,6 @@ export const criar = async (req, res) => {
 export const buscarTodos = async (req, res) => {
     try {
         const registros = await NoticiaModel.buscarTodos(req.query);
-        if (registros.length === 0) {
-            return res.status(400).json({ message: 'Nenhum registro encontrado.' });
-        }
-
         return res.status(200).json(registros);
     } catch (error) {
         console.error('Erro ao buscar notícias:', error);
@@ -105,6 +103,7 @@ export const atualizar = async (req, res) => {
             data,
         });
     } catch (error) {
+        if (tratarErroPrisma(error, res)) return;
         console.error('Erro ao atualizar notícia:', error);
         return res.status(500).json({ error: 'Erro ao atualizar registro.' });
     }
