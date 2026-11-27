@@ -37,11 +37,11 @@ model Noticia {
   resumo         String   @db.VarChar(255)
   conteudo       String   @db.Text
   urlImagem      String?  @db.VarChar(500)
+  fonte          String?  @db.VarChar(500)
   dataPublicacao DateTime @default(now())
 
   @@map("noticias")
 }
-
 model Carreira {
   id                 Int      @id @default(autoincrement())
   nome               String   @db.VarChar(150)
