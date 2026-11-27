@@ -1,6 +1,5 @@
 import express from 'express';
 import * as controller from '../controllers/usuarioController.js';
-import { authAdmin } from '../utils/apiKey.js';
 import { authAdmin, authPublic } from '../utils/apiKey.js';
 
 const router = express.Router();
