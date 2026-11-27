@@ -1,7 +1,6 @@
-
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import dicasRoute from './routes/dicasRoute.js';
 import participantesRoute from './routes/participantesRoute.js';
 import simuladoRoute from './routes/simuladoRoute.js';
@@ -11,8 +10,6 @@ import usuarioRoute from './routes/usuarioRoute.js';
 import temaRoute from './routes/temaRoute.js';
 import carreiraRoute from './routes/carreiraRoute.js';
 import estagioRoute from './routes/estagioRoute.js';
-
-dotenv.config();
 
 const app = express();
 

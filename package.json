@@ -11,6 +11,7 @@
   "keywords": [],
   "type": "module",
   "dependencies": {
+    "@clerk/express": "^2.1.99",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
