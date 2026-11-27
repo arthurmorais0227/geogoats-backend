@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import UsuarioModel from '../model/UsuarioModel.js';
 
 const semSenha = ({ senha, ...usuario }) => usuario;
@@ -147,5 +148,30 @@ export const deletar = async (req, res) => {
     } catch (error) {
         console.error('Erro ao deletar:', error);
         return res.status(500).json({ error: 'Erro ao deletar registro.' });
+    }
+};
+
+export const login = async (req, res) => {
+    try {
+        const { email, senha } = req.body ?? {};
+        if (!email || !senha) {
+            return res.status(400).json({ error: 'Informe email e senha.' });
+        }
+
+        const usuario = await UsuarioModel.buscarPorEmail(email);
+        if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+            return res.status(401).json({ error: 'Email ou senha incorretos.' });
+        }
+
+        const token = jwt.sign(
+            { id: usuario.id, nome: usuario.nome, isAdmin: usuario.isAdmin },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' },
+        );
+
+        return res.status(200).json({ token, usuario: semSenha(usuario) });
+    } catch (error) {
+        console.error('Erro no login:', error);
+        return res.status(500).json({ error: 'Erro interno no login.' });
     }
 };

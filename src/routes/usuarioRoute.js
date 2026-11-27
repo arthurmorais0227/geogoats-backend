@@ -1,6 +1,7 @@
 import express from 'express';
 import * as controller from '../controllers/usuarioController.js';
 import { authAdmin } from '../utils/apiKey.js';
+import { authAdmin, authPublic } from '../utils/apiKey.js';
 
 const router = express.Router();
 
@@ -9,5 +10,6 @@ router.get('/', authAdmin, controller.buscarTodos);
 router.get('/:id', authAdmin, controller.buscarPorId);
 router.put('/:id', authAdmin, controller.atualizar);
 router.delete('/:id', authAdmin, controller.deletar);
+router.post('/login', authPublic, controller.login);
 
 export default router;
