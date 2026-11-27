@@ -9,6 +9,5 @@ router.get('/', authAdmin, controller.buscarTodos);
 router.get('/:id', authAdmin, controller.buscarPorId);
 router.put('/:id', authAdmin, controller.atualizar);
 router.delete('/:id', authAdmin, controller.deletar);
-router.post('/login', authPublic, controller.login);
 
 export default router;
