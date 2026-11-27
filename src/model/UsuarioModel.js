@@ -55,9 +55,4 @@ export default class UsuarioModel {
         const data = await prisma.usuario.findUnique({ where: { id } });
         return data ? new UsuarioModel(data) : null;
     }
-
-    static async buscarPorEmail(email) {
-    const data = await prisma.usuario.findUnique({ where: { email } });
-    return data ? new UsuarioModel(data) : null;
-}
 }
