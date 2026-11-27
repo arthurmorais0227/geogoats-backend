@@ -1,35 +1,15 @@
 import NoticiaModel from '../model/NoticiaModel.js';
 import { tratarErroPrisma } from '../utils/prismaErrors.js';
+import { validarNoticia } from '../utils/validarNoticia.js';
 
 export const criar = async (req, res) => {
     try {
-        const { titulo, resumo, conteudo, urlImagem, dataPublicacao } = req.body ?? {};
-
-        if (!titulo) {
-            return res.status(400).json({ error: 'O campo "titulo" é obrigatório!' });
+        const { erro, dados } = validarNoticia(req.body);
+        if (erro) {
+            return res.status(400).json({ error: erro });
         }
 
-        if (!resumo) {
-            return res.status(400).json({ error: 'O campo "resumo" é obrigatório!' });
-        }
-
-        if (!conteudo) {
-            return res.status(400).json({ error: 'O campo "conteudo" é obrigatório!' });
-        }
-
-        const publicacao = dataPublicacao === undefined ? undefined : new Date(dataPublicacao);
-        if (dataPublicacao !== undefined && (dataPublicacao === null || Number.isNaN(publicacao.getTime()))) {
-            return res.status(400).json({ error: 'O campo "dataPublicacao" deve ser uma data válida.' });
-        }
-
-        const noticia = new NoticiaModel({
-            titulo,
-            resumo,
-            conteudo,
-            urlImagem,
-            dataPublicacao: publicacao,
-        });
-        const data = await noticia.criar();
+        const data = await new NoticiaModel(dados).criar();
         return res.status(201).json({ message: 'Notícia criada com sucesso!', data });
     } catch (error) {
         if (tratarErroPrisma(error, res)) return;
@@ -74,8 +54,9 @@ export const atualizar = async (req, res) => {
             return res.status(400).json({ error: 'ID inválido.' });
         }
 
-        if (!req.body) {
-            return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
+        const { erro, dados } = validarNoticia(req.body, { parcial: true });
+        if (erro) {
+            return res.status(400).json({ error: erro });
         }
 
         const noticia = await NoticiaModel.buscarPorId(id);
@@ -83,19 +64,7 @@ export const atualizar = async (req, res) => {
             return res.status(404).json({ error: 'Registro não encontrado para atualizar.' });
         }
 
-        for (const campo of ['titulo', 'resumo', 'conteudo', 'urlImagem']) {
-            if (req.body[campo] !== undefined) {
-                noticia[campo] = req.body[campo];
-            }
-        }
-
-        if (req.body.dataPublicacao !== undefined) {
-            const publicacao = new Date(req.body.dataPublicacao);
-            if (req.body.dataPublicacao === null || Number.isNaN(publicacao.getTime())) {
-                return res.status(400).json({ error: 'O campo "dataPublicacao" deve ser uma data válida.' });
-            }
-            noticia.dataPublicacao = publicacao;
-        }
+        Object.assign(noticia, dados);
 
         const data = await noticia.atualizar();
         return res.status(200).json({
